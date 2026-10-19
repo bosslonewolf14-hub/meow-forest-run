@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1b2a1b" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B1%3C/text%3E%3C/svg%3E" />
+    <title>เหมียววิ่งป่า</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #1b2a1b;
+        overflow: hidden;
+        overscroll-behavior: none; /* กันดึงหน้าจอรีเฟรช/เลื่อนหน้าบนมือถือตอนเล่น */
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+      }
+      #game canvas {
+        touch-action: none; /* ให้เกมรับการสัมผัสเองทั้งหมด ไม่ให้เบราว์เซอร์ซูม/เลื่อน */
+      }
+      /* มือถือแนวตั้ง: จอแคบเกินเล่น ขอให้หมุนเป็นแนวนอน */
+      #rotate {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        background: #1b2a1b;
+        color: #ffffff;
+        font: 24px/1.5 sans-serif;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 24px;
+      }
+      /* เงื่อนไขนี้ต้องตรงกับ QUERY ใน src/orientation.js (ที่ใช้หยุดเกมตอนแนวตั้ง) */
+      @media (orientation: portrait) and (pointer: coarse) {
+        #rotate {
+          display: flex;
+        }
+      }
+      #rotate .icon {
+        font-size: 72px;
+        line-height: 1;
+      }
+      #rotate button {
+        font: inherit;
+        font-weight: bold;
+        color: #ffffff;
+        background: #4caf50;
+        border: 3px solid #ffffff;
+        border-radius: 14px;
+        padding: 14px 28px;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      #rotate button:active {
+        background: #3b9a44;
+      }
+      #rotate .note {
+        font-size: 16px;
+        max-width: 28em;
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="rotate" role="alert">
+      <div class="icon">↻</div>
+      <div>เกมนี้เล่นในแนวนอน</div>
+      <button id="rotate-button" type="button">พลิกเป็นแนวนอน</button>
+      <div class="note" id="rotate-note">หรือหมุนโทรศัพท์เองก็ได้</div>
+    </div>
+    <noscript>เกมนี้ต้องเปิดใช้งาน JavaScript</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+เหมียววิ่งป่า v1.0.0
+สร้างเมื่อ 2026-10-19T08:05:28.810Z
+ขนาดรวม 3.67 MB (36 ไฟล์)
+
+โฮสต์: วางทั้งโฟลเดอร์นี้บนเว็บเซิร์ฟเวอร์แบบ Static ที่ไหนก็ได้ (โฟลเดอร์ย่อยก็ได้) เปิด index.html ผ่านเซิร์ฟเวอร์ (ห้ามเปิดไฟล์ตรง ๆ แบบ file://)
+
+  1764044  assets/audio/bgm-forest.wav
+    66194  assets/audio/checkpoint.wav
+     6218  assets/audio/click.wav
+    13835  assets/audio/coin.mp3
+    15038  assets/audio/jump.wav
+    44144  assets/audio/meow.wav
+    70604  assets/audio/splash.wav
+    19448  assets/audio/stomp.wav
+   132344  assets/audio/win.wav
+      258  assets/images/beetle.png
+     3979  assets/images/bg-far-deep.png
+     3979  assets/images/bg-far-night.png
+     3979  assets/images/bg-far.png
+     5789  assets/images/bg-mid-deep.png
+     5789  assets/images/bg-mid-night.png
+     5790  assets/images/bg-mid.png
+     7429  assets/images/bg-near-deep.png
+     7429  assets/images/bg-near-night.png
+     7430  assets/images/bg-near.png
+    78618  assets/images/bg-sky-deep.png
+    12111  assets/images/bg-sky-night.png
+     4203  assets/images/bg-sky.png
+     3729  assets/images/cat.png
+      381  assets/images/checkpoint.png
+      432  assets/images/coin.png
+      209  assets/images/thorn.png
+     1303  assets/images/tileset-deep.png
+     1291  assets/images/tileset-forest.png
+     1433  assets/images/tileset-night.png
+      618  assets/images/treehouse.png
+  1396192  assets/index-DWYl9f7n.js
+    41758  assets/maps/forest-1.tmj
+    54848  assets/maps/forest-2.tmj
+    67318  assets/maps/forest-3.tmj
+      488  assets/README.md
+     1392  index.html

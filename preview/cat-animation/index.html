@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cat animation sample</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; }
+  body {
+    background: #9fd8f2;
+    color: #1b2f3a;
+    font: 14px/1.4 system-ui, "Segoe UI", sans-serif;
+    padding: 10px;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .note { margin: 0 0 8px; padding: 6px 8px; background: #fff8d6; border: 1px solid #d9c46a; border-radius: 6px; font-weight: 600; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 0 0 10px; font-size: 13px; }
+  button { font: inherit; padding: 3px 10px; border: 1px solid #2f6f8f; background: #fff; border-radius: 6px; cursor: pointer; }
+  label { cursor: pointer; user-select: none; }
+  .grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .card { background: rgba(255,255,255,.55); border: 1px solid #6aaecb; border-radius: 8px; padding: 6px; width: 306px; max-width: 100%; }
+  .card canvas { display: block; width: 288px; height: 288px; max-width: 100%; height: auto; aspect-ratio: 1; image-rendering: pixelated; margin: 0 auto; background: #b9e6f8; border-radius: 4px; }
+  .card .name { font-weight: 700; margin-top: 4px; }
+  .card .meta { font-size: 12px; color: #34576a; }
+  .strip { margin-top: 12px; }
+  .strip canvas { display: block; width: 100%; max-width: 100%; image-rendering: pixelated; border-radius: 6px; border: 1px solid #6aaecb; }
+  .err { color: #a00; font-weight: 700; }
+</style>
+</head>
+<body>
+  <h1>Cat animation sample (48x48 frames, shown at 6x)</h1>
+  <p class="note">Procedural sample — replace with PixelLab art later</p>
+  <div class="bar">
+    <button id="pause" type="button">Pause</button>
+    <label><input type="checkbox" id="hitbox"> show 32x48 hitbox</label>
+    <span id="status"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="strip">
+    <div class="meta" style="font-size:12px;margin-bottom:4px">Run across ground (3x)</div>
+    <canvas id="strip" width="456" height="170"></canvas>
+  </div>
+
+<script>
+(() => {
+  const SCALE = 6;
+  const grid = document.getElementById('grid');
+  const statusEl = document.getElementById('status');
+  const pauseBtn = document.getElementById('pause');
+  const hitboxEl = document.getElementById('hitbox');
+  const strip = document.getElementById('strip');
+  let paused = false;
+  let pausedAt = 0;
+  let timeOffset = 0;
+
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Play' : 'Pause';
+    if (paused) pausedAt = performance.now();
+    else timeOffset += performance.now() - pausedAt;
+  });
+
+  const img = new Image();
+  const bust = '?t=' + Date.now();
+  Promise.all([
+    fetch('cat-sheet.json' + bust).then((r) => r.json()),
+    new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = 'cat-sheet.png' + bust; }),
+  ]).then(([meta]) => start(meta)).catch((e) => {
+    statusEl.className = 'err';
+    statusEl.textContent = 'Could not load cat-sheet.png / cat-sheet.json (' + e + ')';
+  });
+
+  function start(meta) {
+    const FW = meta.frameWidth;
+    const FH = meta.frameHeight;
+    statusEl.textContent = meta.totalFrames + ' frames';
+    const cards = meta.animations.map((a) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const cv = document.createElement('canvas');
+      cv.width = FW * SCALE;
+      cv.height = FH * SCALE;
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = a.name;
+      const info = document.createElement('div');
+      info.className = 'meta';
+      card.append(cv, name, info);
+      grid.appendChild(card);
+      return { a, cv, ctx: cv.getContext('2d'), info };
+    });
+
+    // Looping animations cycle forever; one-shots play once, hold the last frame, then restart.
+    function frameAt(a, t) {
+      const seconds = t / 1000;
+      if (a.loop) return Math.floor(seconds * a.fps) % a.count;
+      const cycle = a.count / a.fps + 0.9;
+      return Math.min(Math.floor((seconds % cycle) * a.fps), a.count - 1);
+    }
+
+    function drawCard(c, t) {
+      const { a, cv, ctx } = c;
+      const f = frameAt(a, t);
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      // ground line: feet sit on art row 22, outline on row 23
+      ctx.fillStyle = '#5fae55';
+      ctx.fillRect(0, cv.height - 12, cv.width, 12);
+      ctx.fillStyle = '#3f8a3a';
+      ctx.fillRect(0, cv.height - 12, cv.width, 3);
+      ctx.drawImage(img, (a.start + f) * FW, 0, FW, FH, 0, 0, cv.width, cv.height);
+      if (hitboxEl.checked) {
+        ctx.strokeStyle = 'rgba(255,0,80,.9)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(8 * SCALE + 1, 1, 32 * SCALE - 2, 48 * SCALE - 2);
+      }
+      c.info.textContent = a.fps + ' fps - ' + (a.loop ? 'loop' : 'once') + ' - frame ' + (f + 1) + '/' + a.count;
+    }
+
+    const run = meta.animations.find((a) => a.name === 'run');
+    const sctx = strip.getContext('2d');
+    function drawStrip(t) {
+      const S = 3;
+      const W = strip.width;
+      const H = strip.height;
+      sctx.imageSmoothingEnabled = false;
+      sctx.fillStyle = '#b9e6f8';
+      sctx.fillRect(0, 0, W, H);
+      const gy = H - 24;
+      sctx.fillStyle = '#8b5a2b';
+      sctx.fillRect(0, gy, W, 24);
+      sctx.fillStyle = '#4caf50';
+      sctx.fillRect(0, gy, W, 6);
+      sctx.fillStyle = '#7bd87a';
+      sctx.fillRect(0, gy, W, 2);
+      const sec = t / 1000;
+      const speed = 90; // px per second
+      const span = W + FW * S;
+      const x = ((sec * speed) % span) - FW * S;
+      const f = Math.floor(sec * run.fps) % run.count;
+      // feet sole = art row 22 -> bottom outline row 23 sits just under the grass top
+      sctx.drawImage(img, (run.start + f) * FW, 0, FW, FH, Math.round(x), gy + 6 - FH * S + 2 * S, FW * S, FH * S);
+    }
+
+    function tick(now) {
+      const t = (paused ? pausedAt : now) - timeOffset;
+      for (const c of cards) drawCard(c, t);
+      drawStrip(t);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

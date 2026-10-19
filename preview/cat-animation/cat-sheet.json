@@ -1,0 +1,63 @@
+{
+  "frameWidth": 48,
+  "frameHeight": 48,
+  "totalFrames": 27,
+  "animations": [
+    {
+      "name": "idle",
+      "start": 0,
+      "count": 6,
+      "fps": 5,
+      "loop": true
+    },
+    {
+      "name": "run",
+      "start": 6,
+      "count": 8,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "name": "jump_up",
+      "start": 14,
+      "count": 2,
+      "fps": 10,
+      "loop": false
+    },
+    {
+      "name": "jump_apex",
+      "start": 16,
+      "count": 1,
+      "fps": 6,
+      "loop": false
+    },
+    {
+      "name": "fall",
+      "start": 17,
+      "count": 2,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "name": "land",
+      "start": 19,
+      "count": 2,
+      "fps": 10,
+      "loop": false
+    },
+    {
+      "name": "hurt",
+      "start": 21,
+      "count": 2,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "name": "celebrate",
+      "start": 23,
+      "count": 4,
+      "fps": 8,
+      "loop": true
+    }
+  ]
+}
